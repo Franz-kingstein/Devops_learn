@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps IA-3 – Automated CI/CD on Azure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #e6edf3;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: rgba(22, 27, 34, 0.9);
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #f0f6fc;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .info-card:hover {
+            border-color: #58a6ff;
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #8b949e;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #f0f6fc;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            word-break: break-all;
+        }
+
+        .info-value.version {
+            color: #a371f7;
+        }
+
+        .info-value.hostname {
+            color: #58a6ff;
+        }
+
+        .info-value.deployment {
+            color: #3fb950;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">⚙</div>
+                <h1>DevOps IA-3</h1>
+            </div>
+            <p class="subtitle">Automated CI/CD on Azure</p>
+            <span class="badge">Terraform • Jenkins • Docker</span>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">App Version</div>
+                <div class="info-value version">{{ version }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Server Hostname</div>
+                <div class="info-value hostname">{{ hostname }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Last Deployment</div>
+                <div class="info-value deployment">{{ deployment_time }}</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built with Flask • Deployed via Jenkins Pipeline</p>
+            <p><a href="/health" target="_blank">Health Check Endpoint</a></p>
+        </div>
+    </div>
+</body>
+</html>

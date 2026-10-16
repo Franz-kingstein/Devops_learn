@@ -1,0 +1,74 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+
+# SSH Keys & Secrets
+*.pem
+*.key
+*.pub
+id_rsa*
+id_ed25519*
+*.kubeconfig
+.secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Logs
+*.log
+logs/
+
+# Jenkins
+jenkins-home/
+*.jenkins/
+
+# Azure
+.azure/
+
+# Temporary files
+tmp/
+temp/
+*.tmpvenv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.tfstate*
+.terraform/
+terraform.tfvars
+tfplan
+*.pem
+*.key
+.env

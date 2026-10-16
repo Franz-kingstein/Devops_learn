@@ -1,0 +1,36 @@
+# Example terraform.tfvars file
+# Copy this file to terraform.tfvars and customize values
+# NEVER commit terraform.tfvars to version control (contains secrets)
+
+# Azure region
+location = "East US"
+
+# Project identification
+project_name = "devops-ia3"
+environment  = "dev"
+owner        = "your.email@example.com"
+
+# VM configuration
+admin_username = "azureuser"
+vm_size        = "Standard_B2s"  # ~$30/month, 2 vCPU, 4 GB RAM
+
+# SSH access - RESTRICT IN PRODUCTION!
+# Example: allowed_ssh_cidrs = ["203.0.113.0/24", "198.51.100.5/32"]
+allowed_ssh_cidrs = ["0.0.0.0/0"]
+
+# HTTP access
+allowed_http_cidrs = ["0.0.0.0/0"]
+
+# Application
+app_version    = "1.0.0"
+github_repo_url = "https://github.com/your-org/devops-ia3-azure-cicd.git"
+
+# SSH Key - OPTIONAL
+# If not provided, a new key pair will be generated
+# ssh_public_key_path = "~/.ssh/id_rsa.pub"
+
+# Additional tags
+common_tags = {
+  cost_center = "engineering"
+  team        = "devops"
+}
