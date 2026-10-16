@@ -5,11 +5,13 @@
 pipeline {
     agent any
 
-    // Keep only the last 10 builds to save disk
-    buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5'))
-
-    // Print log lines with [HH:mm:ss] prefix
-    timestamps()
+    // Pipeline options: build retention, timestamps, timeouts
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5'))
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
 
     // Shared values used across stages
     environment {
@@ -18,12 +20,6 @@ pipeline {
         APP_DIR        = '/opt/app'                      // Deployment directory on the VM
         APP_VERSION    = "1.0.0-${env.BUILD_NUMBER}"     // Version injected into the app
         VENV_DIR       = '.venv'                         // Python venv inside workspace
-    }
-
-    options {
-        timeout(time: 30, unit: 'MINUTES')  // Kill hung builds
-        disableConcurrentBuilds()           // One deploy at a time
-        ansiColor('xterm')                  // Optional colored logs
     }
 
     stages {
