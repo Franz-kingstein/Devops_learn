@@ -16,10 +16,11 @@ pipeline {
     // Shared values used across stages
     environment {
         VM_IP          = "${env.VM_IP}"                 // Set in Jenkins env (Manage Jenkins > System)
-        VM_USER        = "${env.VM_USER ?: 'azureuser'}" // VM admin username (terraform admin_username)
+        VM_USER        = "franz"                        // VM admin username (terraform admin_username)
         APP_DIR        = '/opt/app'                      // Deployment directory on the VM
         APP_VERSION    = "1.0.0-${env.BUILD_NUMBER}"     // Version injected into the app
         VENV_DIR       = '.venv'                         // Python venv inside workspace
+        DEPLOY_REACHED = "false"                         // Track if Deploy stage was reached
     }
 
     stages {
@@ -107,6 +108,8 @@ pipeline {
         // rebuild containers with docker compose.
         stage('Deploy') {
             steps {
+                // Mark that we've reached the Deploy stage (for rollback logic)
+                sh 'echo "DEPLOY_REACHED=true" >> $WORKSPACE/.deploy_status'
                 sshagent(credentials: ['azure-vm-ssh']) {
                     sh '''
                         scp -o StrictHostKeyChecking=accept-new \
@@ -151,18 +154,26 @@ pipeline {
     // ---------- Post-build Actions ----------
     post {
         failure {
-            // Deploy or smoke test failed -> roll back to previous commit
-            echo "Build failed! Rolling back on VM $VM_IP ..."
-            sshagent(credentials: ['azure-vm-ssh']) {
-                sh '''
-                    scp -o StrictHostKeyChecking=accept-new \
-                        -o UserKnownHostsFile="$WORKSPACE/.ssh_known_hosts" \
-                        scripts/rollback.sh "$VM_USER@$VM_IP:/tmp/rollback.sh"
+            // Only rollback if Deploy stage was reached (check status file)
+            script {
+                def deployReached = fileExists('.deploy_status') &&
+                    readFile('.deploy_status').contains('DEPLOY_REACHED=true')
+                if (deployReached) {
+                    echo "Deploy stage was reached! Rolling back on VM $VM_IP ..."
+                    sshagent(credentials: ['azure-vm-ssh']) {
+                        sh '''
+                            scp -o StrictHostKeyChecking=accept-new \
+                                -o UserKnownHostsFile="$WORKSPACE/.ssh_known_hosts" \
+                                scripts/rollback.sh "$VM_USER@$VM_IP:/tmp/rollback.sh" || true
 
-                    ssh -o StrictHostKeyChecking=accept-new \
-                        -o UserKnownHostsFile="$WORKSPACE/.ssh_known_hosts" \
-                        "$VM_USER@$VM_IP" "bash /tmp/rollback.sh"
-                '''
+                            ssh -o StrictHostKeyChecking=accept-new \
+                                -o UserKnownHostsFile="$WORKSPACE/.ssh_known_hosts" \
+                                "$VM_USER@$VM_IP" "bash /tmp/rollback.sh" || true
+                        '''
+                    }
+                } else {
+                    echo "Deploy stage not reached - no rollback needed"
+                }
             }
         }
         success {
@@ -172,7 +183,7 @@ pipeline {
             echo "Version:     $APP_VERSION"
         }
         always {
-            // Clean the workspace so the next build starts fresh
+            // Clean workspace LAST so scripts/rollback.sh exists during failure handling
             cleanWs()
         }
     }
