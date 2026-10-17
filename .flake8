@@ -1,0 +1,17 @@
+[flake8]
+# Flake8 config at repo root so it works when Jenkins runs
+# `flake8 app` from the workspace root AND locally from app/
+exclude =
+    venv,
+    .venv,
+    __pycache__,
+    .pytest_cache,
+    *.egg-info,
+    .terraform,
+    node_modules
+
+max-line-length = 120
+
+# Only lint our source, not vendor/third-party code
+per-file-ignores =
+    app/tests/*: S101
