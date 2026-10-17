@@ -1,6 +1,6 @@
 import pytest
 import json
-from app import app
+from app import app, APP_VERSION
 
 
 @pytest.fixture
@@ -16,8 +16,8 @@ def test_index_route(client):
     assert response.status_code == 200
     assert b"DevOps IA-3" in response.data
     assert b"Automated CI/CD on Azure" in response.data
-    # Version should be present (from env or default)
-    assert b"1.0.0-dev" in response.data or b"APP_VERSION" in response.data
+    # Version from APP_VERSION env var (or default) should appear in the page
+    assert APP_VERSION.encode() in response.data
 
 
 def test_health_route(client):
@@ -34,9 +34,8 @@ def test_health_route(client):
 
 
 def test_health_version_matches_app_version(client):
-    """Test that health endpoint version matches the app's version."""
+    """Test that health endpoint version matches the app's APP_VERSION."""
     response = client.get("/health")
     data = json.loads(response.data)
-    # The version should match what the app uses (from env or default)
-    expected = app.config.get("APP_VERSION", "1.0.0-dev")
-    assert data["version"] == expected or data["version"] == "1.0.0-dev"
+    # APP_VERSION is read from env at import time; health must return the same value
+    assert data["version"] == APP_VERSION
