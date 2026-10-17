@@ -72,14 +72,12 @@ pipeline {
         }
 
         // ---------- Stage 4: Package ----------
-        // Archive the app folder as a build artifact so we keep a record
-        // of exactly what was tested. Useful for audits/rollback.
+        // Record the version as a file and archive the app folder as a
+        // build artifact so we keep a record of exactly what was tested.
+        // Useful for audits/rollback.
         stage('Package') {
             steps {
-                sh '''
-                    mkdir -p reports
-                    APP_VERSION="$APP_VERSION" echo "$APP_VERSION" > app/VERSION
-                '''
+                sh 'echo "$APP_VERSION" > app/VERSION'
                 archiveArtifacts artifacts: 'app/**', fingerprint: true,
                                  excludes: '**/__pycache__/**, **/*.pyc'
             }
@@ -182,8 +180,14 @@ pipeline {
             echo "Health URL:  http://$VM_IP/health"
             echo "Version:     $APP_VERSION"
         }
-        always {
-            // Clean workspace LAST so scripts/rollback.sh exists during failure handling
+        // NOTE: Jenkins runs 'post' conditions in a fixed order:
+        //   always -> changed -> fixed -> regression -> aborted ->
+        //   failure -> success -> unstable -> unsuccessful -> cleanup
+        // 'always' fires BEFORE 'failure', so cleanWs() must NOT live
+        // there - it would wipe scripts/rollback.sh and .deploy_status
+        // before the rollback logic could read them. 'cleanup' runs
+        // last, so it is the safe place to delete the workspace.
+        cleanup {
             cleanWs()
         }
     }

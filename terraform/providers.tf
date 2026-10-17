@@ -10,9 +10,11 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.6"
+    # Used by the compute module as a fallback when no SSH public key
+    # is supplied via var.ssh_public_key_path.
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
     }
   }
 

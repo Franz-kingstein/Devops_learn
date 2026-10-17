@@ -1,0 +1,42 @@
+# .dockerignore - keeps the Docker build context small and avoids
+# leaking secrets/state into the image.
+# The build context is the REPO ROOT (docker-compose.yml uses context: ..),
+# so everything below is excluded from what Docker sends to the daemon.
+
+# Version control / CI
+.git
+.github
+.gitignore
+Jenkinsfile
+
+# Python caches and virtualenvs
+**/__pycache__
+**/*.pyc
+**/*.pyo
+.venv
+venv
+**/venv
+.pytest_cache
+
+# Terraform state and providers (never ship these)
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform
+terraform/*.tfvars
+terraform/*.tfvars.json
+!terraform/*.tfvars.example
+
+# Secrets
+*.pem
+*.key
+*.pub
+.env
+.secrets
+
+# Docs, logs and local junk
+docs
+*.md
+*.log
+reports
+tmp
+temp

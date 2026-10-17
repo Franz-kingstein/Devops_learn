@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # Flask application
   app:
@@ -14,7 +12,9 @@ services:
       - "8000"             # Only expose to internal network, not to host
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      # python:3.11-slim has no curl/wget - use Python stdlib instead.
+      # urlopen() exits non-zero on connection errors and non-2xx codes.
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/health')"]
       interval: 30s
       timeout: 5s
       start_period: 10s
