@@ -37,8 +37,6 @@ git reset --hard "$PREV_COMMIT"
 
 # ---------- 4. Rebuild containers with the old code ----------
 log "Rebuilding containers from rolled-back code..."
-docker compose -f "$APP_DIR/docker/docker-compose.yml" \
-    --project-directory "$APP_DIR" \
-    up -d --build
+docker compose -f "$APP_DIR/docker/docker-compose.yml" up -d --build
 
 log "Rollback finished. App restored to commit $PREV_COMMIT"

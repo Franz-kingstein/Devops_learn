@@ -34,9 +34,10 @@ fi
 log "Now at commit: $(git rev-parse --short HEAD)"
 
 # ---------- 3. Build and start containers ----------
+# Note: -f points to the compose file; docker compose uses its
+# directory (/opt/app/docker) as the project dir, so context
+# ".." in docker-compose.yml correctly resolves to /opt/app.
 log "Running docker compose up -d --build ..."
-docker compose -f "$APP_DIR/docker/docker-compose.yml" \
-    --project-directory "$APP_DIR" \
-    up -d --build
+docker compose -f "$APP_DIR/docker/docker-compose.yml" up -d --build
 
 log "Deploy finished. Current version: $APP_VERSION"
